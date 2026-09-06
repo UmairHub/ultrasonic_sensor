@@ -11,7 +11,7 @@ void UART2_Init(void);
 void UART2_SendChar(char c);
 void UART2_SendString(char *str);
 void UART2_SendInt(int32_t num);
-
+void delay_us_TIM2(uint32_t us);
 int main(void)
 {
     HCSR04_GPIO_Init();
@@ -26,10 +26,9 @@ int main(void)
         UART2_SendInt(distance);
         UART2_SendString(" cm\r\n");
 
-        for (volatile int d = 0; d < 800000; d++);  // ~50ms between readings
+        delay_us_TIM2(1000000);
     }
 }
-
 void TIM2_Init_Microsecond(void)
 {
     RCC->APB1ENR |= RCC_APB1ENR_TIM2EN;
@@ -39,6 +38,7 @@ void TIM2_Init_Microsecond(void)
     TIM2->PSC = 15;      // 16MHz / (15+1) = 1MHz -> 1 tick = 1us
     TIM2->ARR = 0xFFFFFFFF;  // TIM2 is 32-bit on F4, let it run free, max range
     TIM2->CNT = 0;
+    TIM2->EGR |= TIM_EGR_UG;    // force update event: PSC takes effect immediately
     TIM2->CR1 |= TIM_CR1_CEN;  // start counting
 }
 
@@ -69,14 +69,14 @@ uint32_t HCSR04_ReadDistanceCM(void)
     uint32_t timeout_start = TIM2->CNT;
     while (!(GPIOB->IDR & (1 << 1)))     // wait for ECHO to go high
     {
-        if ((TIM2->CNT - timeout_start) > 30000) return 0xFFFFFFFF; // timeout ~30ms, no echo
+        if ((TIM2->CNT - timeout_start) > 80000) return 0xFFFFFFFF; // increased timeout: 80ms
     }
 
     uint32_t echo_start = TIM2->CNT;
 
     while (GPIOB->IDR & (1 << 1))        // wait while ECHO stays high
     {
-        if ((TIM2->CNT - echo_start) > 30000) return 0xFFFFFFFF; // timeout
+        if ((TIM2->CNT - echo_start) > 40000) return 0xFFFFFFFF; // increased timeout: 40ms
     }
 
     uint32_t echo_end = TIM2->CNT;
@@ -85,8 +85,11 @@ uint32_t HCSR04_ReadDistanceCM(void)
     return duration_us / 58;   // convert to cm
 }
 
-
-
+void delay_us_TIM2(uint32_t us)
+{
+    uint32_t start = TIM2->CNT;
+    while ((TIM2->CNT - start) < us);
+}
 
 void UART2_Init(void)
 {
