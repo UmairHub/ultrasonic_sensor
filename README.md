@@ -19,5 +19,5 @@ Bare-metal (register-level) driver for the HC-SR04 ultrasonic distance sensor, u
 | ECHO        | PB1        | GPIO input — echo pulse (**via voltage divider**) |
 
 ## Wiring Diagram
- 
-See sketch.png in this repo for the full breadboard wiring layout.
+
+![HC-SR04 to Nucleo-F446RE wiring](./sketch.png)
