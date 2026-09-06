@@ -1,6 +1,6 @@
-# HC-SR04 Ultrasonic Distance Sensor — STM32 Nucleo-F446RE
+# HC-SR04 Ultrasonic Distance Sensor : STM32 Nucleo-F446RE
 
-Bare-metal (register-level) driver for the HC-SR04 ultrasonic distance sensor, using polling with a hardware timer (TIM2) as an accurate microsecond stopwatch. Part of the v1 autonomous robot build — obstacle detection stage.
+Bare-metal (register-level) driver for the HC-SR04 ultrasonic distance sensor, using polling with a hardware timer (TIM2) as an accurate microsecond stopwatch. Part of the v1 autonomous robot build   obstacle detection stage.
 
 ## How It Works
 
@@ -18,4 +18,6 @@ Bare-metal (register-level) driver for the HC-SR04 ultrasonic distance sensor, u
 | TRIG        | PB0        | GPIO output — trigger pulse |
 | ECHO        | PB1        | GPIO input — echo pulse (**via voltage divider**) |
 
-
+## Wiring Diagram
+ 
+See sketch.png in this repo for the full breadboard wiring layout.
